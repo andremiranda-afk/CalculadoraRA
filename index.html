@@ -1,540 +1,461 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Calculadora de Reputação — Reclame AQUI</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Calculadora de Reputação — Reclame AQUI</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bp:#fff;--bs:#f5f5f3;--bt:#ebebea;
+  --tp:#1a1a18;--ts:#6b6b68;--tt:#9b9b98;
+  --bo:rgba(0,0,0,0.12);--bos:rgba(0,0,0,0.22);
+  --bw:#FAEEDA;--tw:#633806;
+  --bi:#E6F1FB;--ti:#0C447C;
+  --r8:8px;--r12:12px;
+  --font:system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bp:#1e1e1c;--bs:#2a2a28;--bt:#242422;
+  --tp:#f0f0ee;--ts:#a0a09e;--tt:#6e6e6c;
+  --bo:rgba(255,255,255,0.1);--bos:rgba(255,255,255,0.18);
+  --bw:#412402;--tw:#FAC775;--bi:#042C53;--ti:#B5D4F4;
+}}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--font);background:var(--bt);color:var(--tp);display:flex;flex-direction:column}
 
-    :root {
-      --bg-primary: #ffffff;
-      --bg-secondary: #f5f5f3;
-      --bg-tertiary: #efefec;
-      --text-primary: #1a1a18;
-      --text-secondary: #6b6b68;
-      --text-tertiary: #9b9b98;
-      --border-tertiary: rgba(0,0,0,0.12);
-      --border-secondary: rgba(0,0,0,0.22);
-      --border-primary: rgba(0,0,0,0.35);
-      --bg-warning: #FAEEDA;
-      --text-warning: #633806;
-      --bg-info: #E6F1FB;
-      --text-info: #0C447C;
-      --radius-md: 8px;
-      --radius-lg: 12px;
-      --font: system-ui, -apple-system, 'Segoe UI', sans-serif;
-    }
+/* HEADER */
+.hdr{background:var(--bp);border-bottom:0.5px solid var(--bo);padding:12px 24px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.hdr h1{font-size:15px;font-weight:500;color:var(--tp);white-space:nowrap}
+.hdr p{font-size:12px;color:var(--ts)}
 
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg-primary: #1e1e1c;
-        --bg-secondary: #2a2a28;
-        --bg-tertiary: #242422;
-        --text-primary: #f0f0ee;
-        --text-secondary: #a0a09e;
-        --text-tertiary: #6e6e6c;
-        --border-tertiary: rgba(255,255,255,0.1);
-        --border-secondary: rgba(255,255,255,0.18);
-        --border-primary: rgba(255,255,255,0.28);
-        --bg-warning: #412402;
-        --text-warning: #FAC775;
-        --bg-info: #042C53;
-        --text-info: #B5D4F4;
-      }
-    }
+/* BODY */
+.body{flex:1;display:grid;grid-template-columns:320px 1fr;min-height:0}
 
-    body {
-      font-family: var(--font);
-      background: var(--bg-tertiary);
-      color: var(--text-primary);
-      min-height: 100vh;
-      padding: 2rem 1rem 4rem;
-    }
+/* SIDEBAR */
+.side{background:var(--bp);border-right:0.5px solid var(--bo);overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
 
-    .page-header {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-    .page-header h1 {
-      font-size: 22px;
-      font-weight: 500;
-      color: var(--text-primary);
-      margin-bottom: 4px;
-    }
-    .page-header p {
-      font-size: 14px;
-      color: var(--text-secondary);
-    }
+/* MAIN */
+.main{overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;background:var(--bt)}
 
-    .container {
-      max-width: 780px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
+/* PANELS */
+.panel{background:var(--bp);border:0.5px solid var(--bo);border-radius:var(--r12);padding:16px}
+.ptitle{font-size:14px;font-weight:500;color:var(--tp);margin-bottom:3px}
+.psub{font-size:12px;color:var(--ts);margin-bottom:14px}
 
-    .panel {
-      background: var(--bg-primary);
-      border: 0.5px solid var(--border-tertiary);
-      border-radius: var(--radius-lg);
-      padding: 1.5rem;
-    }
-    .panel-title { font-size: 16px; font-weight: 500; color: var(--text-primary); margin-bottom: 4px; }
-    .panel-sub   { font-size: 13px; color: var(--text-secondary); margin-bottom: 1.25rem; }
-    .sec-label   { font-size: 11px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 10px; }
+/* ALERTS */
+.alert{display:none;padding:9px 12px;border-radius:var(--r8);font-size:12px;border-left:3px solid;margin-bottom:6px}
+.alert.warn{background:var(--bw);color:var(--tw);border-color:#BA7517}
+.alert.info{background:var(--bi);color:var(--ti);border-color:#185FA5}
 
-    .alerts { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1rem; }
-    .alert  { display: none; padding: 10px 14px; border-radius: var(--radius-md); font-size: 13px; border-left: 3px solid; }
-    .alert.warn { background: var(--bg-warning); color: var(--text-warning); border-color: #BA7517; }
-    .alert.info { background: var(--bg-info);    color: var(--text-info);    border-color: #185FA5; }
+/* INPUTS GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.ic{background:var(--bs);border-radius:var(--r8);padding:10px}
+.ic-lbl{font-size:11px;font-weight:500;color:var(--tp);margin-bottom:1px}
+.ic-sub{font-size:10px;color:var(--ts);margin-bottom:7px;line-height:1.3}
+.ir{display:flex;align-items:center;gap:6px}
+.ir input[type=number]{flex:1;height:38px;border-radius:var(--r8);border:0.5px solid var(--bos);background:var(--bp);color:var(--tp);font-size:17px;font-weight:500;font-family:var(--font);padding:0 8px;outline:none;-moz-appearance:textfield;appearance:textfield;min-width:0;transition:border-color .15s}
+.ir input::-webkit-outer-spin-button,.ir input::-webkit-inner-spin-button{-webkit-appearance:none}
+.ir input:focus{border-color:rgba(0,0,0,0.4)}
+.sfx{font-size:13px;font-weight:500;color:var(--tt);flex-shrink:0}
+.mt{height:3px;border-radius:2px;background:var(--bo);overflow:hidden;margin-top:7px}
+.mf{height:100%;border-radius:2px;transition:width .3s}
+.ferr{font-size:10px;color:#A32D2D;margin-top:3px;display:none}
 
-    .scores-row { display: flex; align-items: flex-end; justify-content: flex-end; gap: 12px; margin-bottom: 1rem; }
-    .score-bubble { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-    .bubble-circle { width: 72px; height: 72px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 2px solid; }
-    .bubble-num { font-size: 20px; font-weight: 500; line-height: 1; }
-    .bubble-cap { font-size: 10px; font-weight: 500; margin-top: 2px; }
-    .bubble-lbl { font-size: 11px; color: var(--text-secondary); }
+/* SUM GRID */
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+.sc{border-radius:var(--r8);padding:8px;text-align:center;background:var(--bs)}
+.sv{font-size:16px;font-weight:500}
+.sl{font-size:10px;color:var(--ts);margin-top:2px;line-height:1.3}
 
-    .tier-bar { display: flex; border-radius: 20px; overflow: hidden; height: 36px; }
-    .tier-seg { display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; white-space: nowrap; padding: 0 8px; transition: opacity .2s; cursor: default; border-right: 0.5px solid rgba(255,255,255,.3); }
-    .tier-seg:last-child { border-right: none; }
-    .tier-seg.dim { opacity: .35; }
-    .tier-ticks { display: flex; justify-content: space-between; padding: 0 2px; margin-top: 4px; margin-bottom: 0; }
-    .tier-tick { font-size: 10px; color: var(--text-tertiary); }
+/* BUBBLES */
+.brow{display:flex;align-items:flex-end;justify-content:flex-end;gap:10px;margin-bottom:12px}
+.bwrap{display:flex;flex-direction:column;align-items:center;gap:3px}
+.bc{width:68px;height:68px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px solid}
+.bn{font-size:18px;font-weight:500;line-height:1}
+.bcp{font-size:9px;font-weight:500;margin-top:1px}
+.blbl{font-size:11px;color:var(--ts)}
 
-    .impacts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 1.25rem; }
-    .impact-box  { border-radius: var(--radius-md); padding: 1rem; border: 0.5px solid; }
-    .impact-box.pos { background: #EAF3DE; border-color: #97C459; }
-    .impact-box.neg { background: #FCEBEB; border-color: #F09595; }
-    .impact-title { font-size: 13px; font-weight: 500; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
-    .impact-title.pos { color: #3B6D11; }
-    .impact-title.neg { color: #A32D2D; }
-    .impact-item.pos { color: #27500A; font-size: 13px; margin-bottom: 4px; }
-    .impact-item.neg { color: #791F1F; font-size: 13px; margin-bottom: 4px; }
+/* TIER BAR */
+.tbar{display:flex;border-radius:16px;overflow:hidden;height:32px}
+.tseg{display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;white-space:nowrap;padding:0 6px;transition:opacity .2s;border-right:0.5px solid rgba(255,255,255,.25)}
+.tseg:last-child{border-right:none}
+.tseg.dim{opacity:.3}
+.tticks{display:flex;justify-content:space-between;padding:0 2px;margin-top:3px}
+.ttick{font-size:10px;color:var(--tt)}
 
-    .aval-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 1rem; }
-    .aval-card { background: var(--bg-primary); border: 0.5px solid var(--border-tertiary); border-radius: var(--radius-md); padding: 12px; }
-    .aval-card-lbl { font-size: 11px; color: var(--text-secondary); margin-bottom: 6px; }
-    .aval-card-num { font-size: 20px; font-weight: 500; color: var(--text-primary); margin-bottom: 8px; }
-    .aval-bar-track { height: 5px; border-radius: 3px; background: var(--border-tertiary); overflow: hidden; margin-bottom: 4px; }
-    .aval-bar-fill  { height: 100%; border-radius: 3px; transition: width .3s; }
-    .aval-pct { font-size: 11px; color: var(--text-secondary); }
+/* IMPACTS */
+.irow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.ibox{border-radius:var(--r8);padding:10px;border:0.5px solid}
+.ibox.pos{background:#EAF3DE;border-color:#97C459}
+.ibox.neg{background:#FCEBEB;border-color:#F09595}
+.ititle{font-size:12px;font-weight:500;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.ititle.pos{color:#3B6D11}.ititle.neg{color:#A32D2D}
+.iitem{font-size:12px;margin-bottom:3px}
+.iitem.pos{color:#27500A}.iitem.neg{color:#791F1F}
 
-    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-    .icard { background: var(--bg-secondary); border-radius: var(--radius-md); padding: 12px; }
-    .icard-label { font-size: 12px; font-weight: 500; color: var(--text-primary); margin-bottom: 2px; }
-    .icard-sub   { font-size: 11px; color: var(--text-secondary); margin-bottom: 8px; }
-    .input-row   { display: flex; align-items: center; gap: 8px; }
-    .input-row input[type=number] {
-      flex: 1; height: 40px;
-      border-radius: var(--radius-md);
-      border: 0.5px solid var(--border-secondary);
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      font-size: 18px; font-weight: 500;
-      font-family: var(--font);
-      padding: 0 10px; outline: none;
-      -moz-appearance: textfield; appearance: textfield;
-      transition: border-color .15s; min-width: 0;
-    }
-    .input-row input::-webkit-outer-spin-button,
-    .input-row input::-webkit-inner-spin-button { -webkit-appearance: none; }
-    .input-row input:focus { border-color: var(--border-primary); }
-    .input-suffix { font-size: 14px; font-weight: 500; color: var(--text-tertiary); flex-shrink: 0; }
-    .mini-track { height: 3px; border-radius: 2px; background: var(--border-tertiary); overflow: hidden; margin-top: 8px; }
-    .mini-fill  { height: 100%; border-radius: 2px; transition: width .3s; }
-    .ferr { font-size: 11px; color: #A32D2D; margin-top: 4px; display: none; }
+/* AVAL GRID */
+.ag{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}
+.ac{background:var(--bp);border:0.5px solid var(--bo);border-radius:var(--r8);padding:10px}
+.ac-lbl{font-size:10px;color:var(--ts);margin-bottom:5px}
+.ac-num{font-size:18px;font-weight:500;color:var(--tp);margin-bottom:6px}
+.ac-bar{height:4px;border-radius:2px;background:var(--bo);overflow:hidden;margin-bottom:3px}
+.ac-fill{height:100%;border-radius:2px;transition:width .3s}
+.ac-pct{font-size:10px;color:var(--ts)}
 
-    .sum-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 8px; margin-top: 4px; }
-    .sum-card { border-radius: var(--radius-md); padding: 10px; text-align: center; background: var(--bg-secondary); }
-    .sum-val  { font-size: 18px; font-weight: 500; }
-    .sum-lbl  { font-size: 10px; color: var(--text-secondary); margin-top: 2px; }
+/* CONTRIB */
+.cg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.cc{background:var(--bs);border-radius:var(--r8);padding:10px;text-align:center}
+.cc-lbl{font-size:10px;color:var(--ts);margin-bottom:5px}
+.cc-val{font-size:20px;font-weight:500}
+.cc-bar{height:3px;border-radius:2px;background:var(--bo);overflow:hidden;margin-top:7px}
+.cc-fill{height:100%;border-radius:2px;transition:width .3s}
+.fml{margin-top:8px;padding:8px 10px;background:var(--bs);border-radius:var(--r8);font-family:monospace;font-size:11px;color:var(--ts)}
 
-    @media (max-width: 560px) {
-      .grid2        { grid-template-columns: 1fr; }
-      .impacts-row  { grid-template-columns: 1fr; }
-      .aval-grid    { grid-template-columns: 1fr 1fr; }
-      .sum-grid     { grid-template-columns: 1fr 1fr; }
-      .scores-row   { justify-content: center; }
-      .tier-seg     { font-size: 9px; padding: 0 4px; }
-    }
-  </style>
+@media(max-width:860px){
+  html,body{overflow:auto}
+  .body{grid-template-columns:1fr;height:auto}
+  .side{border-right:none;border-bottom:0.5px solid var(--bo)}
+  .ag{grid-template-columns:1fr 1fr}
+  .cg{grid-template-columns:1fr 1fr}
+  .sg{grid-template-columns:1fr 1fr}
+}
+</style>
 </head>
 <body>
 
-<div class="page-header">
-  <h1>Calculadora de reputação</h1>
-  <p>Reclame AQUI · simule cenários e veja o impacto da moderação</p>
+<div class="hdr">
+  <h1>Calculadora de reputação — Reclame AQUI</h1>
+  <p>Simule cenários e veja o impacto da moderação em tempo real</p>
 </div>
 
-<div class="container">
+<div class="body">
 
-  <div class="alerts">
-    <div class="alert warn" id="al-ir">IR abaixo de 50% — reputação automaticamente <strong>Não recomendada</strong>.</div>
-    <div class="alert info" id="al-aval">Menos de 10 avaliações — empresa <strong>sem reputação definida</strong>.</div>
-    <div class="alert warn" id="al-mod">Moderados com sucesso não pode exceder os tickets negativos.</div>
-  </div>
+<!-- SIDEBAR -->
+<div class="side">
 
-  <!-- RESULTADO -->
+  <div id="al-ir" class="alert warn">IR abaixo de 50% — reputação automaticamente <strong>Não recomendada</strong>.</div>
+  <div id="al-aval" class="alert info">Menos de 10 avaliações — empresa <strong>sem reputação definida</strong>.</div>
+  <div id="al-mod" class="alert warn">Moderados com sucesso não pode exceder os tickets negativos.</div>
+
   <div class="panel">
-    <div class="panel-title">Reputação simulada</div>
-    <div class="panel-sub">Resultado baseado nos dados informados abaixo</div>
-
-    <div class="scores-row">
-      <div class="score-bubble">
-        <div class="bubble-circle" id="bub-atual" style="border-color:#888780;background:#F1EFE8">
-          <span class="bubble-num" id="bub-atual-num" style="color:#444441">—</span>
-        </div>
-        <span class="bubble-lbl">Atual</span>
-      </div>
-      <div class="score-bubble">
-        <div class="bubble-circle" id="bub-sim" style="border-color:#3B6D11;background:#EAF3DE">
-          <span class="bubble-num" id="bub-sim-num" style="color:#27500A">—</span>
-          <span class="bubble-cap" id="bub-sim-cap" style="color:#3B6D11">—</span>
-        </div>
-        <span class="bubble-lbl">Simulada</span>
-      </div>
-    </div>
-
-    <div class="tier-bar">
-      <div class="tier-seg dim" id="ts-sem"   style="flex:1.2;background:#B4B2A9;color:#2C2C2A">Sem índice</div>
-      <div class="tier-seg dim" id="ts-nr"    style="flex:1.5;background:#993556;color:#FBEAF0">Não recom.</div>
-      <div class="tier-seg dim" id="ts-ruim"  style="flex:1.2;background:#E24B4A;color:#FCEBEB">Ruim</div>
-      <div class="tier-seg dim" id="ts-reg"   style="flex:1.2;background:#EF9F27;color:#412402">Regular</div>
-      <div class="tier-seg dim" id="ts-bom"   style="flex:1.2;background:#378ADD;color:#042C53">Bom</div>
-      <div class="tier-seg dim" id="ts-otimo" style="flex:1.2;background:#1D9E75;color:#04342C">Ótimo</div>
-      <div class="tier-seg dim" id="ts-ra"    style="flex:1.5;background:#3B6D11;color:#EAF3DE">RA 1000</div>
-    </div>
-    <div class="tier-ticks">
-      <span class="tier-tick"></span><span class="tier-tick">&lt; 5</span>
-      <span class="tier-tick">6</span><span class="tier-tick">7</span>
-      <span class="tier-tick">8</span><span class="tier-tick">10</span>
-      <span class="tier-tick"></span>
-    </div>
-
-    <div class="impacts-row">
-      <div class="impact-box pos">
-        <div class="impact-title pos">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 11V3M3 7l4-4 4 4" stroke="#3B6D11" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Impactos positivos
-        </div>
-        <div id="pos-content"><p class="impact-item pos">Ajuste os dados para ver os ganhos</p></div>
-      </div>
-      <div class="impact-box neg">
-        <div class="impact-title neg">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 3v8M3 7l4 4 4-4" stroke="#A32D2D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Impactos negativos
-        </div>
-        <div id="neg-content"><p class="impact-item neg">Ajuste os dados para ver os riscos</p></div>
-      </div>
-    </div>
-
-    <div style="margin-top:1.25rem">
-      <div class="sec-label">Avaliações necessárias para alcançar os indicadores simulados</div>
-      <div class="aval-grid">
-        <div class="aval-card">
-          <div class="aval-card-lbl">Reclamações respondidas</div>
-          <div class="aval-card-num" id="an-ir">0</div>
-          <div class="aval-bar-track"><div class="aval-bar-fill" id="ab-ir" style="background:#378ADD;width:0%"></div></div>
-          <div class="aval-pct" id="ap-ir">—</div>
-        </div>
-        <div class="aval-card">
-          <div class="aval-card-lbl">Voltariam a fazer negócio</div>
-          <div class="aval-card-num" id="an-in">0</div>
-          <div class="aval-bar-track"><div class="aval-bar-fill" id="ab-in" style="background:#D85A30;width:0%"></div></div>
-          <div class="aval-pct" id="ap-in">—</div>
-        </div>
-        <div class="aval-card">
-          <div class="aval-card-lbl">Índice de solução</div>
-          <div class="aval-card-num" id="an-is">0</div>
-          <div class="aval-bar-track"><div class="aval-bar-fill" id="ab-is" style="background:#1D9E75;width:0%"></div></div>
-          <div class="aval-pct" id="ap-is">—</div>
-        </div>
-        <div class="aval-card">
-          <div class="aval-card-lbl">Nota do consumidor</div>
-          <div class="aval-card-num" id="an-ma">0</div>
-          <div class="aval-bar-track"><div class="aval-bar-fill" id="ab-ma" style="background:#7F77DD;width:0%"></div></div>
-          <div class="aval-pct" id="ap-ma">—</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- INDICADORES BASE -->
-  <div class="panel">
-    <div class="panel-title">Indicadores base</div>
-    <div class="panel-sub">Informe os valores atuais da empresa</div>
-    <div class="grid2">
-      <div class="icard">
-        <div class="icard-label">Índice de Resposta (IR)</div>
-        <div class="icard-sub">% respondidas · peso 2 · mín. 50%</div>
-        <div class="input-row">
-          <input type="number" id="ir" min="0" max="100" step="0.1" value="85">
-          <span class="input-suffix" style="color:#378ADD">%</span>
-        </div>
-        <div class="mini-track"><div class="mini-fill" id="mb-ir" style="width:85%;background:#378ADD"></div></div>
+    <div class="ptitle">Indicadores base</div>
+    <div class="psub">Informe os valores atuais da empresa</div>
+    <div class="g2">
+      <div class="ic">
+        <div class="ic-lbl">Índice de Resposta (IR)</div>
+        <div class="ic-sub">% respondidas · peso 2 · mín. 50%</div>
+        <div class="ir"><input type="number" id="ir" min="0" max="100" step="0.1" value="85"><span class="sfx" style="color:#378ADD">%</span></div>
+        <div class="mt"><div class="mf" id="mb-ir" style="width:85%;background:#378ADD"></div></div>
         <div class="ferr" id="err-ir">Entre 0 e 100</div>
       </div>
-      <div class="icard">
-        <div class="icard-label">Média das Avaliações (MA)</div>
-        <div class="icard-sub">nota 0–10 · peso 3 · ×10 na fórmula</div>
-        <div class="input-row">
-          <input type="number" id="ma" min="0" max="10" step="0.1" value="7.5">
-          <span class="input-suffix" style="color:#7F77DD">/10</span>
-        </div>
-        <div class="mini-track"><div class="mini-fill" id="mb-ma" style="width:75%;background:#7F77DD"></div></div>
+      <div class="ic">
+        <div class="ic-lbl">Média das Avaliações (MA)</div>
+        <div class="ic-sub">nota 0–10 · peso 3 · ×10 na fórmula</div>
+        <div class="ir"><input type="number" id="ma" min="0" max="10" step="0.1" value="7.5"><span class="sfx" style="color:#7F77DD">/10</span></div>
+        <div class="mt"><div class="mf" id="mb-ma" style="width:75%;background:#7F77DD"></div></div>
         <div class="ferr" id="err-ma">Entre 0 e 10</div>
       </div>
-      <div class="icard">
-        <div class="icard-label">Índice de Solução (IS)</div>
-        <div class="icard-sub">% de problemas resolvidos · peso 3</div>
-        <div class="input-row">
-          <input type="number" id="is" min="0" max="100" step="0.1" value="78">
-          <span class="input-suffix" style="color:#1D9E75">%</span>
-        </div>
-        <div class="mini-track"><div class="mini-fill" id="mb-is" style="width:78%;background:#1D9E75"></div></div>
+      <div class="ic">
+        <div class="ic-lbl">Índice de Solução (IS)</div>
+        <div class="ic-sub">% resolvidos · peso 3</div>
+        <div class="ir"><input type="number" id="is" min="0" max="100" step="0.1" value="78"><span class="sfx" style="color:#1D9E75">%</span></div>
+        <div class="mt"><div class="mf" id="mb-is" style="width:78%;background:#1D9E75"></div></div>
         <div class="ferr" id="err-is">Entre 0 e 100</div>
       </div>
-      <div class="icard">
-        <div class="icard-label">Novos Negócios (IN)</div>
-        <div class="icard-sub">voltaria a comprar? · peso 2</div>
-        <div class="input-row">
-          <input type="number" id="in" min="0" max="100" step="0.1" value="72">
-          <span class="input-suffix" style="color:#D85A30">%</span>
-        </div>
-        <div class="mini-track"><div class="mini-fill" id="mb-in" style="width:72%;background:#D85A30"></div></div>
+      <div class="ic">
+        <div class="ic-lbl">Novos Negócios (IN)</div>
+        <div class="ic-sub">voltaria a comprar? · peso 2</div>
+        <div class="ir"><input type="number" id="in" min="0" max="100" step="0.1" value="72"><span class="sfx" style="color:#D85A30">%</span></div>
+        <div class="mt"><div class="mf" id="mb-in" style="width:72%;background:#D85A30"></div></div>
         <div class="ferr" id="err-in">Entre 0 e 100</div>
       </div>
     </div>
-    <div class="icard">
-      <div class="icard-label">Avaliações recebidas</div>
-      <div class="icard-sub">total de reclamações com nota · mínimo 10</div>
-      <div class="input-row">
-        <input type="number" id="naval" min="0" max="999999" step="1" value="50" style="max-width:180px">
-        <span class="input-suffix">avaliações</span>
-      </div>
-      <div class="mini-track" style="max-width:180px"><div class="mini-fill" id="mb-aval" style="width:10%;background:#888780"></div></div>
+    <div class="ic">
+      <div class="ic-lbl">Avaliações recebidas</div>
+      <div class="ic-sub">total com nota do consumidor · mínimo 10</div>
+      <div class="ir"><input type="number" id="naval" min="0" max="999999" step="1" value="50" style="max-width:160px"><span class="sfx">avaliações</span></div>
+      <div class="mt" style="max-width:160px"><div class="mf" id="mb-aval" style="width:10%;background:#888780"></div></div>
       <div class="ferr" id="err-naval">Valor inválido</div>
     </div>
   </div>
 
-  <!-- MODERAÇÃO -->
   <div class="panel">
-    <div class="panel-title">Simulação de moderação</div>
-    <div class="panel-sub">Tickets moderados com sucesso têm IS, IN e nota removidos do cálculo</div>
-    <div class="grid2">
-      <div class="icard">
-        <div class="icard-label">Tickets c/ indicadores negativos</div>
-        <div class="icard-sub">base para moderação</div>
-        <div class="input-row">
-          <input type="number" id="tneg" min="0" max="999999" step="1" value="10">
-          <span class="input-suffix" style="color:#D85A30">tickets</span>
-        </div>
-        <div class="mini-track"><div class="mini-fill" id="mb-tneg" style="width:20%;background:#D85A30"></div></div>
+    <div class="ptitle">Simulação de moderação</div>
+    <div class="psub">Tickets moderados têm IS, IN e nota removidos do cálculo</div>
+    <div class="g2">
+      <div class="ic">
+        <div class="ic-lbl">Tickets c/ indicadores negativos</div>
+        <div class="ic-sub">base para moderação</div>
+        <div class="ir"><input type="number" id="tneg" min="0" max="999999" step="1" value="10"><span class="sfx" style="color:#D85A30">tickets</span></div>
+        <div class="mt"><div class="mf" id="mb-tneg" style="width:20%;background:#D85A30"></div></div>
         <div class="ferr" id="err-tneg">Valor inválido</div>
       </div>
-      <div class="icard">
-        <div class="icard-label">Moderados com sucesso</div>
-        <div class="icard-sub">IS, IN e nota removidos do cálculo</div>
-        <div class="input-row">
-          <input type="number" id="tmod" min="0" max="999999" step="1" value="5">
-          <span class="input-suffix" style="color:#1D9E75">tickets</span>
-        </div>
-        <div class="mini-track"><div class="mini-fill" id="mb-tmod" style="width:10%;background:#1D9E75"></div></div>
+      <div class="ic">
+        <div class="ic-lbl">Moderados com sucesso</div>
+        <div class="ic-sub">IS, IN e nota removidos</div>
+        <div class="ir"><input type="number" id="tmod" min="0" max="999999" step="1" value="5"><span class="sfx" style="color:#1D9E75">tickets</span></div>
+        <div class="mt"><div class="mf" id="mb-tmod" style="width:10%;background:#1D9E75"></div></div>
         <div class="ferr" id="err-tmod">Não pode exceder tickets negativos</div>
       </div>
     </div>
-    <div class="sum-grid">
-      <div class="sum-card">
-        <div class="sum-val" id="sum-aval">50</div>
-        <div class="sum-lbl">avaliações totais</div>
+    <div class="sg">
+      <div class="sc"><div class="sv" id="sum-aval">50</div><div class="sl">avaliações totais</div></div>
+      <div class="sc"><div class="sv" id="sum-neg" style="color:#993C1D">10</div><div class="sl">indicadores negativos</div></div>
+      <div class="sc" style="background:#EAF3DE"><div class="sv" id="sum-mod" style="color:#27500A">5</div><div class="sl" style="color:#3B6D11">moderados</div></div>
+      <div class="sc" style="background:#FCEBEB"><div class="sv" id="sum-nmod" style="color:#A32D2D">5</div><div class="sl" style="color:#791F1F">não moderados</div></div>
+    </div>
+  </div>
+
+</div><!-- /sidebar -->
+
+<!-- MAIN -->
+<div class="main">
+
+  <div class="panel">
+    <div class="ptitle">Reputação simulada</div>
+    <div class="psub">Resultado baseado nos dados informados</div>
+
+    <div class="brow">
+      <div class="bwrap">
+        <div class="bc" id="bub-atual" style="border-color:#888780;background:#F1EFE8">
+          <span class="bn" id="bub-atual-num" style="color:#444441">—</span>
+        </div>
+        <span class="blbl">Atual</span>
       </div>
-      <div class="sum-card">
-        <div class="sum-val" id="sum-neg" style="color:#993C1D">10</div>
-        <div class="sum-lbl">c/ indicadores negativos</div>
+      <div class="bwrap">
+        <div class="bc" id="bub-sim" style="border-color:#3B6D11;background:#EAF3DE">
+          <span class="bn" id="bub-sim-num" style="color:#27500A">—</span>
+          <span class="bcp" id="bub-sim-cap" style="color:#3B6D11">—</span>
+        </div>
+        <span class="blbl">Simulada</span>
       </div>
-      <div class="sum-card" style="background:#EAF3DE">
-        <div class="sum-val" id="sum-mod" style="color:#27500A">5</div>
-        <div class="sum-lbl" style="color:#3B6D11">moderados com sucesso</div>
+    </div>
+
+    <div class="tbar">
+      <div class="tseg dim" id="ts-sem"   style="flex:1.2;background:#B4B2A9;color:#2C2C2A">Sem índice</div>
+      <div class="tseg dim" id="ts-nr"    style="flex:1.5;background:#993556;color:#FBEAF0">Não recom.</div>
+      <div class="tseg dim" id="ts-ruim"  style="flex:1.2;background:#E24B4A;color:#FCEBEB">Ruim</div>
+      <div class="tseg dim" id="ts-reg"   style="flex:1.2;background:#EF9F27;color:#412402">Regular</div>
+      <div class="tseg dim" id="ts-bom"   style="flex:1.2;background:#378ADD;color:#042C53">Bom</div>
+      <div class="tseg dim" id="ts-otimo" style="flex:1.2;background:#1D9E75;color:#04342C">Ótimo</div>
+      <div class="tseg dim" id="ts-ra"    style="flex:1.5;background:#3B6D11;color:#EAF3DE">RA 1000</div>
+    </div>
+    <div class="tticks">
+      <span class="ttick"></span><span class="ttick">&lt;5</span>
+      <span class="ttick">6</span><span class="ttick">7</span>
+      <span class="ttick">8</span><span class="ttick">10</span>
+      <span class="ttick"></span>
+    </div>
+
+    <div class="irow">
+      <div class="ibox pos">
+        <div class="ititle pos">
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 11V3M3 7l4-4 4 4" stroke="#3B6D11" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Impactos positivos
+        </div>
+        <div id="pos-content"><p class="iitem pos">Ajuste os dados para ver os ganhos</p></div>
       </div>
-      <div class="sum-card" style="background:#FCEBEB">
-        <div class="sum-val" id="sum-nmod" style="color:#A32D2D">5</div>
-        <div class="sum-lbl" style="color:#791F1F">não moderados</div>
+      <div class="ibox neg">
+        <div class="ititle neg">
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 3v8M3 7l4 4 4-4" stroke="#A32D2D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Impactos negativos
+        </div>
+        <div id="neg-content"><p class="iitem neg">Ajuste os dados para ver os riscos</p></div>
       </div>
     </div>
   </div>
 
-</div>
+  <div class="panel">
+    <div class="ptitle">Avaliações necessárias</div>
+    <div class="psub">Quantidade adicional para alcançar 90% em cada indicador</div>
+    <div class="ag">
+      <div class="ac">
+        <div class="ac-lbl">Reclamações respondidas</div>
+        <div class="ac-num" id="an-ir">0</div>
+        <div class="ac-bar"><div class="ac-fill" id="ab-ir" style="background:#378ADD;width:0%"></div></div>
+        <div class="ac-pct" id="ap-ir">—</div>
+      </div>
+      <div class="ac">
+        <div class="ac-lbl">Voltariam a fazer negócio</div>
+        <div class="ac-num" id="an-in">0</div>
+        <div class="ac-bar"><div class="ac-fill" id="ab-in" style="background:#D85A30;width:0%"></div></div>
+        <div class="ac-pct" id="ap-in">—</div>
+      </div>
+      <div class="ac">
+        <div class="ac-lbl">Índice de solução</div>
+        <div class="ac-num" id="an-is">0</div>
+        <div class="ac-bar"><div class="ac-fill" id="ab-is" style="background:#1D9E75;width:0%"></div></div>
+        <div class="ac-pct" id="ap-is">—</div>
+      </div>
+      <div class="ac">
+        <div class="ac-lbl">Nota do consumidor</div>
+        <div class="ac-num" id="an-ma">0</div>
+        <div class="ac-bar"><div class="ac-fill" id="ab-ma" style="background:#7F77DD;width:0%"></div></div>
+        <div class="ac-pct" id="ap-ma">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="ptitle">Contribuição por indicador</div>
+    <div class="psub">Peso de cada critério na nota final AR</div>
+    <div class="cg">
+      <div class="cc">
+        <div class="cc-lbl">IR × 2</div>
+        <div class="cc-val" id="c-ir" style="color:#378ADD">—</div>
+        <div class="cc-bar"><div class="cc-fill" id="b-ir" style="background:#378ADD;width:0%"></div></div>
+      </div>
+      <div class="cc">
+        <div class="cc-lbl">MA × 30</div>
+        <div class="cc-val" id="c-ma" style="color:#7F77DD">—</div>
+        <div class="cc-bar"><div class="cc-fill" id="b-ma" style="background:#7F77DD;width:0%"></div></div>
+      </div>
+      <div class="cc">
+        <div class="cc-lbl">IS × 3</div>
+        <div class="cc-val" id="c-is" style="color:#1D9E75">—</div>
+        <div class="cc-bar"><div class="cc-fill" id="b-is" style="background:#1D9E75;width:0%"></div></div>
+      </div>
+      <div class="cc">
+        <div class="cc-lbl">IN × 2</div>
+        <div class="cc-val" id="c-in" style="color:#D85A30">—</div>
+        <div class="cc-bar"><div class="cc-fill" id="b-in" style="background:#D85A30;width:0%"></div></div>
+      </div>
+    </div>
+    <div class="fml" id="ar-formula">AR = ((IR×2)+(MA×10×3)+(IS×3)+(IN×2)) / 100</div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /body -->
 
 <script>
-  const TIERS = [
-    { id:'ts-nr',   min:-1,  max:4.99, label:'Não recomendada', bub_bg:'#FCEBEB', bub_bd:'#A32D2D', bub_fg:'#791F1F' },
-    { id:'ts-ruim', min:5,   max:5.99, label:'Ruim',            bub_bg:'#FAECE7', bub_bd:'#D85A30', bub_fg:'#993C1D' },
-    { id:'ts-reg',  min:6,   max:6.99, label:'Regular',         bub_bg:'#FAEEDA', bub_bd:'#EF9F27', bub_fg:'#633806' },
-    { id:'ts-bom',  min:7,   max:7.99, label:'Bom',             bub_bg:'#E6F1FB', bub_bd:'#378ADD', bub_fg:'#0C447C' },
-    { id:'ts-otimo',min:8,   max:9.99, label:'Ótimo',           bub_bg:'#EAF3DE', bub_bd:'#1D9E75', bub_fg:'#27500A' },
-    { id:'ts-ra',   min:10,  max:10,   label:'RA 1000',         bub_bg:'#EAF3DE', bub_bd:'#3B6D11', bub_fg:'#173404' },
-  ];
-  const ALL_SEGS = ['ts-sem','ts-nr','ts-ruim','ts-reg','ts-bom','ts-otimo','ts-ra'];
+const TIERS=[
+  {id:'ts-nr',  min:-1, max:4.99,label:'Não recomendada',bb:'#FCEBEB',bd:'#A32D2D',bf:'#791F1F'},
+  {id:'ts-ruim',min:5,  max:5.99,label:'Ruim',           bb:'#FAECE7',bd:'#D85A30',bf:'#993C1D'},
+  {id:'ts-reg', min:6,  max:6.99,label:'Regular',        bb:'#FAEEDA',bd:'#EF9F27',bf:'#633806'},
+  {id:'ts-bom', min:7,  max:7.99,label:'Bom',            bb:'#E6F1FB',bd:'#378ADD',bf:'#0C447C'},
+  {id:'ts-otimo',min:8, max:9.99,label:'Ótimo',          bb:'#EAF3DE',bd:'#1D9E75',bf:'#27500A'},
+  {id:'ts-ra',  min:10, max:10,  label:'RA 1000',        bb:'#EAF3DE',bd:'#3B6D11',bf:'#173404'},
+];
+const SEGS=['ts-sem','ts-nr','ts-ruim','ts-reg','ts-bom','ts-otimo','ts-ra'];
+const g=id=>document.getElementById(id);
+const v=id=>parseFloat(g(id).value)||0;
+const cl=(x,a,b)=>Math.min(Math.max(x,a),b);
+const fmt=(n,d=2)=>n.toFixed(d).replace('.',',');
+const err=(id,s)=>g('err-'+id).style.display=s?'block':'none';
 
-  function getTier(ar) { return TIERS.find(t => ar >= t.min && ar <= t.max) || TIERS[0]; }
-  function v(id) { return parseFloat(document.getElementById(id).value) || 0; }
-  function clamp(x,a,b) { return Math.min(Math.max(x,a),b); }
-  function fmt(n,d=2) { return n.toFixed(d).replace('.',','); }
-  function showErr(id,show) { document.getElementById('err-'+id).style.display = show ? 'block' : 'none'; }
+function adjMA(n,ma,t){return n<=0||t<=0?ma:Math.min((ma*n-t*ma*0.7)/Math.max(n-t,1),10)}
+function adjIS(n,is,t){return n<=0||t<=0?is:Math.min((is/100*n)/Math.max(n-t,1)*100,100)}
+function adjIN(n,ir,t){return n<=0||t<=0?ir:Math.min((ir/100*n)/Math.max(n-t,1)*100,100)}
 
-  function calcAdjMA(naval,ma,tmod) {
-    if (naval <= 0 || tmod <= 0) return ma;
-    return Math.min((ma*naval - tmod*ma*0.7) / Math.max(naval-tmod,1), 10);
-  }
-  function calcAdjIS(naval,is_,tmod) {
-    if (naval <= 0 || tmod <= 0) return is_;
-    return Math.min((is_/100*naval) / Math.max(naval-tmod,1) * 100, 100);
-  }
-  function calcAdjIN(naval,in_,tmod) {
-    if (naval <= 0 || tmod <= 0) return in_;
-    return Math.min((in_/100*naval) / Math.max(naval-tmod,1) * 100, 100);
-  }
+function update(){
+  const ir=cl(v('ir'),0,100),ma=cl(v('ma'),0,10);
+  const is_=cl(v('is'),0,100),in_=cl(v('in'),0,100);
+  const naval=Math.max(v('naval'),0);
+  const tneg=Math.max(v('tneg'),0);
+  const tmodRaw=v('tmod'),tmod=cl(tmodRaw,0,tneg);
 
-  function setAvalCards(resp,inn,isn,man,irV,isV,inV,maV) {
-    document.getElementById('an-ir').textContent = resp > 0 ? '+'+resp : '0';
-    document.getElementById('an-in').textContent = inn  > 0 ? '+'+inn  : '0';
-    document.getElementById('an-is').textContent = isn  > 0 ? '+'+isn  : '0';
-    document.getElementById('an-ma').textContent = man  > 0 ? '+'+man  : '0';
-    document.getElementById('ab-ir').style.width = Math.min(irV,100)+'%';
-    document.getElementById('ab-in').style.width = Math.min(inV,100)+'%';
-    document.getElementById('ab-is').style.width = Math.min(isV,100)+'%';
-    document.getElementById('ab-ma').style.width = Math.min(maV/10*100,100)+'%';
-    document.getElementById('ap-ir').textContent = fmt(irV,1)+'%';
-    document.getElementById('ap-in').textContent = fmt(inV,1)+'%';
-    document.getElementById('ap-is').textContent = fmt(isV,1)+'%';
-    document.getElementById('ap-ma').textContent = fmt(maV,2);
-  }
+  err('ir',v('ir')<0||v('ir')>100);
+  err('ma',v('ma')<0||v('ma')>10);
+  err('is',v('is')<0||v('is')>100);
+  err('in',v('in')<0||v('in')>100);
+  err('tmod',tmodRaw>tneg);
 
-  function update() {
-    const ir   = clamp(v('ir'),  0, 100);
-    const ma   = clamp(v('ma'),  0, 10);
-    const is_  = clamp(v('is'),  0, 100);
-    const in_  = clamp(v('in'),  0, 100);
-    const naval= Math.max(v('naval'), 0);
-    const tneg = Math.max(v('tneg'),  0);
-    const tmodRaw = v('tmod');
-    const tmod = clamp(tmodRaw, 0, tneg);
+  g('mb-ir').style.width=ir+'%';
+  g('mb-ma').style.width=(ma/10*100)+'%';
+  g('mb-is').style.width=is_+'%';
+  g('mb-in').style.width=in_+'%';
+  g('mb-aval').style.width=Math.min(naval/500*100,100)+'%';
+  g('mb-tneg').style.width=Math.min(tneg/Math.max(naval,1)*100,100)+'%';
+  g('mb-tmod').style.width=tneg>0?Math.min(tmod/tneg*100,100)+'%':'0%';
 
-    showErr('ir',   v('ir')  < 0 || v('ir')  > 100);
-    showErr('ma',   v('ma')  < 0 || v('ma')  > 10);
-    showErr('is',   v('is')  < 0 || v('is')  > 100);
-    showErr('in',   v('in')  < 0 || v('in')  > 100);
-    showErr('tmod', tmodRaw > tneg);
+  g('al-ir').style.display=ir<50?'block':'none';
+  g('al-aval').style.display=naval<10?'block':'none';
+  g('al-mod').style.display=tmodRaw>tneg?'block':'none';
 
-    document.getElementById('mb-ir').style.width   = ir+'%';
-    document.getElementById('mb-ma').style.width   = (ma/10*100)+'%';
-    document.getElementById('mb-is').style.width   = is_+'%';
-    document.getElementById('mb-in').style.width   = in_+'%';
-    document.getElementById('mb-aval').style.width = Math.min(naval/500*100,100)+'%';
-    document.getElementById('mb-tneg').style.width = Math.min(tneg/Math.max(naval,1)*100,100)+'%';
-    document.getElementById('mb-tmod').style.width = tneg > 0 ? Math.min(tmod/tneg*100,100)+'%' : '0%';
+  g('sum-aval').textContent=naval;
+  g('sum-neg').textContent=tneg;
+  g('sum-mod').textContent=tmod;
+  g('sum-nmod').textContent=tneg-tmod;
 
-    document.getElementById('al-ir').style.display   = ir < 50    ? 'block' : 'none';
-    document.getElementById('al-aval').style.display = naval < 10 ? 'block' : 'none';
-    document.getElementById('al-mod').style.display  = tmodRaw > tneg ? 'block' : 'none';
+  const aMA=adjMA(naval,ma,tmod),aIS=adjIS(naval,is_,tmod),aIN=adjIN(naval,in_,tmod);
+  const adjN=Math.max(naval-tmod,0);
 
-    document.getElementById('sum-aval').textContent = naval;
-    document.getElementById('sum-neg').textContent  = tneg;
-    document.getElementById('sum-mod').textContent  = tmod;
-    document.getElementById('sum-nmod').textContent = tneg - tmod;
+  const noRep=naval<10,noResp=ir<50;
 
-    const adjMA    = calcAdjMA(naval, ma,  tmod);
-    const adjIS    = calcAdjIS(naval, is_, tmod);
-    const adjIN    = calcAdjIN(naval, in_, tmod);
-    const adjNaval = Math.max(naval - tmod, 0);
-
-    const bubActEl = document.getElementById('bub-atual-num');
-    const bubSimEl = document.getElementById('bub-sim-num');
-    const bubCapEl = document.getElementById('bub-sim-cap');
-    const bubAct   = document.getElementById('bub-atual');
-    const bubSim   = document.getElementById('bub-sim');
-    const posEl    = document.getElementById('pos-content');
-    const negEl    = document.getElementById('neg-content');
-
-    if (naval < 10) {
-      ALL_SEGS.forEach(s => document.getElementById(s).classList.add('dim'));
-      document.getElementById('ts-sem').classList.remove('dim');
-      bubActEl.textContent = '—'; bubSimEl.textContent = '—'; bubCapEl.textContent = '';
-      bubAct.style.cssText = 'border-color:#888780;background:#F1EFE8';
-      bubSim.style.cssText = 'border-color:#888780;background:#F1EFE8';
-      posEl.innerHTML = '<p class="impact-item pos" style="color:#3B6D11;font-size:12px">Mínimo 10 avaliações necessário</p>';
-      negEl.innerHTML = '<p class="impact-item neg">Sem reputação definida</p>';
-      setAvalCards(0,0,0,0,0,0,0,0);
-      return;
-    }
-
-    if (ir < 50) {
-      ALL_SEGS.forEach(s => document.getElementById(s).classList.add('dim'));
-      document.getElementById('ts-nr').classList.remove('dim');
-      bubActEl.textContent = 'NR'; bubSimEl.textContent = 'NR'; bubCapEl.textContent = '';
-      const nrStyle = 'border-color:#A32D2D;background:#FCEBEB';
-      bubAct.style.cssText = nrStyle; bubSim.style.cssText = nrStyle;
-      bubActEl.style.color = '#791F1F'; bubSimEl.style.color = '#791F1F';
-      const needed = Math.ceil(naval * 0.5) - Math.round(ir/100*naval);
-      negEl.innerHTML = `<p class="impact-item neg">Responder +${needed} reclamações para sair de Não Recomendada</p>`;
-      posEl.innerHTML = '<p class="impact-item pos" style="color:#3B6D11;font-size:12px">Aumente o IR acima de 50% para desbloquear o cálculo</p>';
-      setAvalCards(needed,0,0,0,ir,0,0,0);
-      return;
-    }
-
-    const arBase = (ir*2 + ma*10*3  + is_*3  + in_*2)  / 100;
-    const arAdj  = (ir*2 + adjMA*10*3 + adjIS*3 + adjIN*2) / 100;
-    const tBase  = getTier(arBase);
-    const tAdj   = getTier(arAdj);
-
-    bubActEl.textContent = fmt(arBase);
-    bubActEl.style.color = tBase.bub_fg;
-    bubAct.style.cssText = `border-color:${tBase.bub_bd};background:${tBase.bub_bg}`;
-
-    bubSimEl.textContent = fmt(arAdj);
-    bubSimEl.style.color = tAdj.bub_fg;
-    bubCapEl.textContent = tAdj.label;
-    bubCapEl.style.color = tAdj.bub_fg;
-    bubSim.style.cssText = `border-color:${tAdj.bub_bd};background:${tAdj.bub_bg}`;
-
-    ALL_SEGS.forEach(s => document.getElementById(s).classList.add('dim'));
-    if (tAdj.id) document.getElementById(tAdj.id).classList.remove('dim');
-
-    let posItems = [], negItems = [];
-    if (tmod > 0) {
-      posItems.push(`${tmod} ticket(s) moderado(s) com sucesso`);
-      posItems.push(`IS: ${fmt(is_,1)}% → ${fmt(adjIS,1)}%`);
-      posItems.push(`IN: ${fmt(in_,1)}% → ${fmt(adjIN,1)}%`);
-      posItems.push(`MA: ${fmt(ma,1)} → ${fmt(adjMA,1)}`);
-    } else {
-      posItems.push('Sem moderações aplicadas na simulação');
-    }
-    if (arAdj > arBase) posItems.push(`Nota subiu ${fmt(arAdj-arBase)} pontos`);
-    if (ir  < 70)  negItems.push(`IR em ${fmt(ir,1)}% — recomendado acima de 70%`);
-    if (adjIS < 70) negItems.push(`IS em ${fmt(adjIS,1)}% — impacto alto na nota`);
-    if (adjIN < 70) negItems.push(`IN em ${fmt(adjIN,1)}% — consumidores não voltariam`);
-    if (negItems.length === 0) negItems.push('Nenhum risco identificado nos dados atuais');
-
-    posEl.innerHTML = posItems.map(i => `<p class="impact-item pos">+ ${i}</p>`).join('');
-    negEl.innerHTML = negItems.map(i => `<p class="impact-item neg">&#9651; ${i}</p>`).join('');
-
-    const respNeed = Math.max(0, Math.ceil(naval*0.9) - Math.round(ir/100*naval));
-    const inNeed   = Math.max(0, Math.ceil(adjNaval*0.9) - Math.round(adjIN/100*adjNaval));
-    const isNeed   = Math.max(0, Math.ceil(adjNaval*0.9) - Math.round(adjIS/100*adjNaval));
-    const maNeed   = Math.max(0, Math.ceil((8-adjMA)*adjNaval/2));
-
-    setAvalCards(respNeed, inNeed, isNeed, maNeed, ir, adjIS, adjIN, adjMA);
+  if(noRep||noResp){
+    SEGS.forEach(s=>g(s).classList.add('dim'));
+    g(noRep?'ts-sem':'ts-nr').classList.remove('dim');
+    ['bub-atual','bub-sim'].forEach(id=>{
+      g(id).style.cssText='border-color:#888780;background:#F1EFE8';
+    });
+    g('bub-atual-num').style.color='#444441';
+    g('bub-sim-num').style.color='#444441';
+    g('bub-atual-num').textContent=noRep?'—':'NR';
+    g('bub-sim-num').textContent=noRep?'—':'NR';
+    g('bub-sim-cap').textContent='';
+    g('pos-content').innerHTML=`<p class="iitem pos">${noRep?'Mínimo 10 avaliações necessário':'Aumente o IR acima de 50%'}</p>`;
+    g('neg-content').innerHTML=`<p class="iitem neg">${noRep?'Sem reputação definida':'IR abaixo do mínimo — classificação automática'}</p>`;
+    ['c-ir','c-ma','c-is','c-in'].forEach(id=>g(id).textContent='—');
+    ['b-ir','b-ma','b-is','b-in'].forEach(id=>g(id).style.width='0%');
+    g('ar-formula').textContent='AR = ((IR×2)+(MA×10×3)+(IS×3)+(IN×2)) / 100';
+    g('an-ir').textContent=noResp?'+'+Math.max(0,Math.ceil(naval*.5)-Math.round(ir/100*naval)):'0';
+    ['an-in','an-is','an-ma'].forEach(id=>g(id).textContent='0');
+    ['ab-ir','ab-in','ab-is','ab-ma'].forEach(id=>g(id).style.width='0%');
+    ['ap-ir','ap-in','ap-is','ap-ma'].forEach(id=>g(id).textContent='—');
+    return;
   }
 
-  ['ir','ma','is','in','naval','tneg','tmod'].forEach(id => {
-    const el = document.getElementById(id);
-    el.addEventListener('input',  update);
-    el.addEventListener('change', update);
-  });
-  update();
+  const arBase=(ir*2+ma*10*3+is_*3+in_*2)/100;
+  const arAdj=(ir*2+aMA*10*3+aIS*3+aIN*2)/100;
+  const tBase=TIERS.find(t=>arBase>=t.min&&arBase<=t.max)||TIERS[0];
+  const tAdj=TIERS.find(t=>arAdj>=t.min&&arAdj<=t.max)||TIERS[0];
+
+  g('bub-atual-num').textContent=fmt(arBase);
+  g('bub-atual-num').style.color=tBase.bf;
+  g('bub-atual').style.cssText=`border-color:${tBase.bd};background:${tBase.bb}`;
+  g('bub-sim-num').textContent=fmt(arAdj);
+  g('bub-sim-num').style.color=tAdj.bf;
+  g('bub-sim-cap').textContent=tAdj.label;
+  g('bub-sim-cap').style.color=tAdj.bf;
+  g('bub-sim').style.cssText=`border-color:${tAdj.bd};background:${tAdj.bb}`;
+
+  SEGS.forEach(s=>g(s).classList.add('dim'));
+  g(tAdj.id).classList.remove('dim');
+
+  const cIr=ir*2,cMa=aMA*10*3,cIs=aIS*3,cIn=aIN*2;
+  g('c-ir').textContent=cIr.toFixed(1);g('b-ir').style.width=Math.round(cIr/200*100)+'%';
+  g('c-ma').textContent=cMa.toFixed(1);g('b-ma').style.width=Math.round(cMa/300*100)+'%';
+  g('c-is').textContent=cIs.toFixed(1);g('b-is').style.width=Math.round(cIs/300*100)+'%';
+  g('c-in').textContent=cIn.toFixed(1);g('b-in').style.width=Math.round(cIn/200*100)+'%';
+  g('ar-formula').textContent=`((${ir.toFixed(1)}×2)+(${aMA.toFixed(1)}×10×3)+(${aIS.toFixed(1)}×3)+(${aIN.toFixed(1)}×2)) / 100 = ${fmt(arAdj)}${tmod>0?' ['+tmod+' mod.]':''}`;
+
+  let pos=[],neg=[];
+  if(tmod>0){pos.push(`${tmod} ticket(s) moderado(s) com sucesso`);pos.push(`IS: ${fmt(is_,1)}% → ${fmt(aIS,1)}%`);pos.push(`IN: ${fmt(in_,1)}% → ${fmt(aIN,1)}%`);pos.push(`MA: ${fmt(ma,1)} → ${fmt(aMA,1)}`);}
+  else pos.push('Sem moderações aplicadas na simulação');
+  if(arAdj>arBase)pos.push(`Nota subiu ${fmt(arAdj-arBase)} pontos`);
+  if(ir<70)neg.push(`IR em ${fmt(ir,1)}% — recomendado acima de 70%`);
+  if(aIS<70)neg.push(`IS em ${fmt(aIS,1)}% — impacto alto na nota`);
+  if(aIN<70)neg.push(`IN em ${fmt(aIN,1)}% — consumidores não voltariam`);
+  if(!neg.length)neg.push('Nenhum risco identificado nos dados atuais');
+  g('pos-content').innerHTML=pos.map(i=>`<p class="iitem pos">+ ${i}</p>`).join('');
+  g('neg-content').innerHTML=neg.map(i=>`<p class="iitem neg">▲ ${i}</p>`).join('');
+
+  const rN=Math.max(0,Math.ceil(naval*.9)-Math.round(ir/100*naval));
+  const iN=Math.max(0,Math.ceil(adjN*.9)-Math.round(aIN/100*adjN));
+  const sN=Math.max(0,Math.ceil(adjN*.9)-Math.round(aIS/100*adjN));
+  const mN=Math.max(0,Math.ceil((8-aMA)*adjN/2));
+  g('an-ir').textContent=rN>0?'+'+rN:'0';g('ab-ir').style.width=Math.min(ir,100)+'%';g('ap-ir').textContent=fmt(ir,1)+'%';
+  g('an-in').textContent=iN>0?'+'+iN:'0';g('ab-in').style.width=Math.min(aIN,100)+'%';g('ap-in').textContent=fmt(aIN,1)+'%';
+  g('an-is').textContent=sN>0?'+'+sN:'0';g('ab-is').style.width=Math.min(aIS,100)+'%';g('ap-is').textContent=fmt(aIS,1)+'%';
+  g('an-ma').textContent=mN>0?'+'+mN:'0';g('ab-ma').style.width=Math.min(aMA/10*100,100)+'%';g('ap-ma').textContent=fmt(aMA,2);
+}
+
+['ir','ma','is','in','naval','tneg','tmod'].forEach(id=>{
+  g(id).addEventListener('input',update);
+  g(id).addEventListener('change',update);
+});
+update();
 </script>
 </body>
 </html>
